@@ -11,7 +11,7 @@ Autor: Oscar Gomez Ramirez
 # pip install -U Flask
 # pip install dash==1.7.0
 # pip install -r requirements.txt
-# gunicorn -b 0.0.0.0:8051 app:server
+# gunicorn -b 0.0.0.0:8051 app:server conda create --name simulator python=3.7
 from time import time
 from textwrap import dedent
 import json
@@ -1255,7 +1255,7 @@ def update_graph(
 
     modelNamesArray = json.loads(modelNames)
     title = modelNamesArray[modelNumber] + ' Data N: ' + str(value) + '| Alg Bw ' + str(
-        big) + ' Sw: ' + str(small) + '| PH- TH: ' + str(threshold) + ' \u03C3: ' + str(admissible)
+        big) + ' Sw: ' + str(small) + '| PH- \u03BB: ' + str(threshold) + ' \u03C3: ' + str(admissible)
 
     r = np.arange(0, 10, 0.1)
 
