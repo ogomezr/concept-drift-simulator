@@ -33,7 +33,7 @@ server = app.server
 app.config['suppress_callback_exceptions'] = True
 app.css.config.serve_locally = False
 
-app.layout = html.Div(children=[
+app.layout = html.Div(style={'overflow':'hidden'},children=[
     # .container class is fixed, .container.scalable is scalable
     html.Div(className="banner", children=[
         html.Div(className='container scalable', children=[
@@ -54,9 +54,10 @@ app.layout = html.Div(children=[
             )
         ]),
     ]),
-    html.Div(id='show-alg', className='container scalable2',
+    html.Div(id='show-alg', className='row',
              children=[
-                 drc.NamedSlider2(
+                 html.Div(className='column2 left2',children=[
+                 drc.NamedSliderNoPadding(
                      name='Show',
                      id='slider-show-alg',
                      min=1,
@@ -64,8 +65,17 @@ app.layout = html.Div(children=[
                      step=1,
                      marks={i: i for i in [0, 1000]},
                      value=1000,
-                     disabled=True)
+                     disabled=True)]
+                ),
+                        html.Div(id='show',className='column2 right2', children=[
+                            html.Button('<', id='button-<', disabled=True,
+                                        style={'opacity': '0.2'}),
+                            html.Button('>', id='button->', disabled=True,
+                                        style={'opacity': '0.2'})
+                        ])
+                        
                  ]),
+
     dcc.Store(id='memory-seed1', storage_type='session'),
     dcc.Store(id='memory-seed2', storage_type='session'),
     html.Div(id='started', style={'display': 'none'}, children='0'),
@@ -74,6 +84,8 @@ app.layout = html.Div(children=[
     html.Div(id='predList', style={'display': 'none'}),
     html.Div(id='dataX', style={'display': 'none'}),
     html.Div(id='dataY', style={'display': 'none'}),
+    html.Div(id='errorAcum', style={'display': 'none'}),
+    html.Div(id='residuals', style={'display': 'none'}),
     html.Div(id='big', style={'display': 'none'}, children='300'),
     html.Div(id='small', style={'display': 'none'}, children='100'),
     html.Div(id='admissible', style={'display': 'none'}, children='0.1'),
@@ -82,13 +94,22 @@ app.layout = html.Div(children=[
     html.Div(id='showValue', style={'display': 'none'}),
     html.Div(id='showValue-<', style={'display': 'none'}),
     html.Div(id='showValue->', style={'display': 'none'}),
+    html.Div(id='check-values', style={'display': 'none'}),
+    html.Div(id='interval', style={'display': 'none'}, children=[
+        dcc.Interval(
+            id='interval-component',
+            interval=1*350, # in milliseconds
+            n_intervals=0,
+            disabled=True
+        )]),
     html.Div(id='body', className='container scalable', children=[
         html.Div(className='row', children=[
             html.Div(
                 id='div-graphs',
                 children=dcc.Graph(
                     id='graph-Concept-Simulator',
-                    style={'display': 'none'}
+                    style={'height': 'calc(100vh - 160px)',
+                           'display': 'none'} 
                 )
             ),
             # -----------------------------------------------------------------------------
@@ -97,48 +118,25 @@ app.layout = html.Div(children=[
                 className='three columns',
                 style={
                     'min-width': '24.5%',
-                    'max-height': 'calc(100vh - 85px)',
+                    ##'max-height': 'calc(100vh - 85px)',
+                    'max-height': 'calc(100vh - 160px)',
                     'overflow-y': 'auto',
-                    'overflow-x': 'hidden',
+                    'overflow-x': 'hidden'
                 },
                 children=[
                     visdcc.Run_js(id='javascript', run=""),
-                    drc.Card([
-                        html.H4("Data Configuration",
-                                id='titledatabase',
-                                style={
-                                    'text-decoration': 'none',
-                                    'color': 'inherit'
-                                }
-                                ),
-                        html.Div(id='show', children=[
-                            html.Button('<', id='button-<', disabled=True,
-                                        style={'opacity': '1', 'display': 'none'}),
-                            html.Button('>', id='button->', disabled=True,
-                                        style={'opacity': '0.2', 'display': 'none'})
-                        ])
-                    ]),
-                    drc.Card([
-                        html.H4("Select Models : ",
-                                style={
-                                    'text-decoration': 'none',
-                                    'color': 'inherit'
-                                }
-                                ),
-                        dcc.Checklist(
-                            id='check-model',
-                            options=[
-                                {'label': 'Lineal', 'value': 'lin', 'disabled': True},
-                                {'label': 'Polynomial', 'value': 'pol'},
-                                {'label': 'Tree Decision', 'value': 'tree'},
-                                {'label': 'KNN', 'value': 'knn'}
-                            ],
-                            values=['lin', 'pol'],
-                            labelStyle={
-                                'display': 'inline-block',
-                                'margin-right': '1em'}
-                        )
-                    ]),
+                    dcc.Tabs(id="tabs", value='init', children=[
+                        dcc.Tab(label='Data init', value='init', 
+                                style ={'color': '#329696'},
+                                selected_style ={'color': '#329696'}),
+                        dcc.Tab(label='Data change', value='change', 
+                                style={'color': '#9660BB'},
+                                selected_style={'color': '#9660BB'}),
+                    ],style={
+                        'padding': 20,
+                        'margin': 5,
+                        'borderRadius': 5,
+                        'border': 'thin lightgrey solid'}),
                     drc.Card([
                         drc.NamedDropdown(
                             name='Dataset Initial',
@@ -249,10 +247,10 @@ app.layout = html.Div(children=[
                             drc.NamedSlider(
                                 name='Angular frequency',
                                 id='slider-angular',
-                                min=0,
+                                min=1,
                                 max=20,
-                                step=20,
-                                marks={i: i for i in [0, 5, 10, 15, 20]},
+                                step=1,
+                                marks={i: i for i in [1, 5, 10, 15, 20]},
                                 value=5
                             ),
                             drc.NamedSlider(
@@ -266,7 +264,7 @@ app.layout = html.Div(children=[
                             ),
                         ]),
 
-                    ], style={'color': '#329696'}),
+                    ], style={'color': '#329696'}, id='initData'),
                     # -----------------------------------------------------------------------------
                     drc.Card([
                         drc.NamedDropdown(
@@ -378,10 +376,10 @@ app.layout = html.Div(children=[
                             drc.NamedSlider(
                                 name='Angular frequency',
                                 id='slider-angular-second',
-                                min=0,
+                                min=1,
                                 max=20,
-                                step=20,
-                                marks={i: i for i in [0, 5, 10, 15, 20]},
+                                step=1,
+                                marks={i: i for i in [1, 5, 10, 15, 20]},
                                 value=5
                             ),
                             drc.NamedSlider(
@@ -395,7 +393,7 @@ app.layout = html.Div(children=[
                             ),
                         ]),
 
-                    ], style={'color': '#9660BB'}),
+                    ], style={'color': '#9660BB'}, id='changeData',),
 
                     # -----------------------------------------------------------------------------
 
@@ -464,27 +462,16 @@ def toggle_senoidal2(toggle_value):
     return {'display': 'none'}
 
 
-@app.callback(Output('aaa', 'data'),
-              [Input('button-randomize', 'n_clicks')],
-              [State('memory-seed1', 'data'),
-               State('memory-seed2', 'data')])
-def printdata(n_clicks, s1, s2):
-    if n_clicks is None:
-        raise dash.exceptions.PreventUpdate()
-    print(s1)
-    print(s2)
-
-    return 2
-
-
-@app.callback(Output('started', 'children'),
+@app.callback([Output('check-values', 'children'),
+               Output('started', 'children')],
               [Input('button-start', 'n_clicks')],
-              [State('started', 'children')])
-def disableFirst(n_clicks, started):
+              [State('started', 'children'),
+               State('check-model','values')])
+def disableFirst(n_clicks, started, check):
     if n_clicks is None:
         raise dash.exceptions.PreventUpdate()
     started = int(started) + 1
-    return started
+    return check,started
 
 
 @app.callback([Output('big', 'children'),
@@ -500,17 +487,15 @@ def setSize(big, small, admissible, threshold):
     return big, small, admissible, threshold
 
 
-
-
-
-
 @app.callback(Output('alg-params', 'children'),
-              [Input('button-start', 'n_clicks')])
+              [Input('button-start', 'n_clicks')]
+              )
 def toggle_options(nclicks):
     if nclicks is None:
         raise dash.exceptions.PreventUpdate()
-
+    
     return [
+        
         dcc.Graph(
             id='graph-sup',
             style={'height': '45%', 'width': '100%'},
@@ -527,7 +512,19 @@ def toggle_options(nclicks):
             'Reset',
             id='button-reset',
             style={'height': '5%', 'margin-left': '100px'}
-        )
+        ),
+        
+        html.Button(
+            'Play',
+            id='button-play',
+            style={'height': '5%', 'margin-left': '20px'}
+        ),
+        
+        html.Button(
+            'Stop',
+            id='button-stop',
+            style={'height': '5%', 'margin-left': '20px', 'display':'none'}
+        ),
 
     ]
 
@@ -540,6 +537,61 @@ def toggle_reset(nclicks, reseted):
         raise dash.exceptions.PreventUpdate()
     reseted = int(reseted) + 1
     return reseted
+
+@app.callback(Output('interval', 'children'),
+              [Input('button-play', 'n_clicks'),
+               Input('button-stop', 'n_clicks'),
+               Input('reseted', 'children')],
+              [State('slider-show-alg', 'max'),
+               State('slider-show-alg', 'value')])
+def playInterval(nplay, nstop, reset, maxShow, value):
+    if nplay is None:
+        raise dash.exceptions.PreventUpdate()
+        
+    tname = dash.callback_context.triggered[0]['prop_id']
+    if tname == 'button-play.n_clicks':
+        return [dcc.Interval(
+                    id='interval-component',
+                    interval=1*350, # in milliseconds
+                    n_intervals=0,
+                    max_intervals=maxShow/10,
+                    disabled=False
+                    )]
+    elif tname =='button-stop.n_clicks':
+        return [dcc.Interval(
+                    id='interval-component',
+                    interval=1*350, # in milliseconds
+                    n_intervals=value/10,
+                    disabled=True)]
+    return [dcc.Interval(
+            id='interval-component',
+            interval=1*350, # in milliseconds
+            n_intervals=-1,
+            disabled=True)]
+    
+@app.callback([Output('button-play', 'style'),
+               Output('button-stop', 'style')],
+              [Input('button-play', 'n_clicks'),
+               Input('button-stop', 'n_clicks'),
+               Input('interval-component', 'n_intervals')],
+              [State('slider-show-alg', 'max'),
+               State('slider-show-alg', 'value')]
+               )
+def setPlayStyle(nplay, nstop, intervals, maxShow, value):
+    if nplay is None:
+        raise dash.exceptions.PreventUpdate()
+      
+    tname = dash.callback_context.triggered[0]['prop_id']
+    if tname == 'button-play.n_clicks':
+        return {'display': 'none'},{'display': 'inline-block', 'height': '5%','margin-left': '20px'}
+    elif tname == 'button-stop.n_clicks':
+        return {'display': 'inline-block', 'height': '5%','margin-left': '20px'},{'display': 'none'}
+    elif intervals*10 == maxShow and tname=='interval-component.n_intervals':
+
+        return {'display': 'inline-block', 'height': '5%','margin-left': '20px'},{'display': 'none'}
+    else:
+        raise dash.exceptions.PreventUpdate()
+
 
 @app.callback(Output('slider-show-alg', 'disabled'),
               [Input('started', 'children'),
@@ -752,9 +804,7 @@ def setModelOptionesDisable(start, reset):
                 {'label': 'Polynomial',
                  'value': 'pol'},
                 {'label': 'Tree Decision',
-                 'value': 'tree'},
-                {'label': 'KNN',
-                 'value': 'knn'}]
+                 'value': 'tree'}]
     return [{'label': 'Lineal',
              'value': 'lin',
              'disabled': True},
@@ -763,27 +813,7 @@ def setModelOptionesDisable(start, reset):
              'disabled': True},
             {'label': 'Tree Decision',
              'value': 'tree',
-             'disabled': True},
-            {'label': 'KNN',
-             'value': 'knn',
              'disabled': True}]
-
-@app.callback(Output('show', 'style'),
-              [Input('started', 'children'),
-               Input('reseted', 'children')])
-def setShowButtonDisable(start, reset):
-    if start == reset:
-        return {'display': 'none'}
-    return {'display': 'block'}
-
-@app.callback(Output('titledatabase', 'style'),
-              [Input('started', 'children'),
-               Input('reseted', 'children')])
-def setShowTitleDisable(start, reset):
-    if start == reset:
-        return {'display': 'block'}
-    return {'display': 'none'}
-
 
 @app.callback(Output('showValue-<', 'children'),
               [Input('button-<', 'n_clicks')],
@@ -808,25 +838,35 @@ def valueUpdate2(button, value):
 @app.callback(Output('slider-show-alg', 'value'),
               [Input('showValue', 'children'),
                Input('showValue-<', 'children'),
-               Input('showValue->', 'children')
-               ]
+               Input('showValue->', 'children'),
+               Input('interval-component', 'n_intervals')
+               ],
+              [State('reseted','children'),
+               State('started','children')]
               )
-def valueUpdate(value1, value2, value3):
-    value = None
+def valueUpdate(value1, value2, value3, interval, start, reset):
     tname = dash.callback_context.triggered[0]['prop_id']
+    
     if tname == 'showValue.children':
-        value = value1
+        return value1
     elif tname == 'showValue-<.children':
-        value = value2
+        return value2
+    elif tname == 'showValue->.children':
+        return value3
+    elif interval!=-1:
+        return interval*10
     else:
-        value = value3
-    return value
+        raise dash.exceptions.PreventUpdate()
 
 
 @app.callback(Output('button-<', 'disabled'),
-              [Input('slider-show-alg', 'value')],
+              [Input('slider-show-alg', 'value'),
+               Input('reseted', 'children')],
               [State('slider-show-alg', 'max')])
-def setButtonmDecreaseDisable(value, maxValue):
+def setButtonmDecreaseDisable(value, reset, maxValue):
+    tname = dash.callback_context.triggered[0]['prop_id']
+    if tname == 'reseted.children':
+        return True
     if value == maxValue:
         return False
     if value == 1:
@@ -834,9 +874,13 @@ def setButtonmDecreaseDisable(value, maxValue):
     return False
 
 @app.callback(Output('button-<', 'style'),
-              [Input('slider-show-alg', 'value')],
+              [Input('slider-show-alg', 'value'),
+               Input('reseted', 'children')],
               [State('slider-show-alg', 'max')])
-def setButtonmDecreaseStyle(value, maxValue):
+def setButtonmDecreaseStyle(value, reset, maxValue):
+    tname = dash.callback_context.triggered[0]['prop_id']
+    if tname == 'reseted.children':
+        return {'opacity': '0.2'}
     if value == maxValue:
         return {'opacity': '1'}
     if value == 1:
@@ -844,9 +888,13 @@ def setButtonmDecreaseStyle(value, maxValue):
     return {'opacity': '1'}
 
 @app.callback(Output('button->', 'disabled'),
-              [Input('slider-show-alg', 'value')],
+              [Input('slider-show-alg', 'value'),
+              Input('reseted', 'children')],
               [State('slider-show-alg', 'max')])
-def setButtonIncreaseDisable(value, maxValue):
+def setButtonIncreaseDisable(value, reset, maxValue):
+    tname = dash.callback_context.triggered[0]['prop_id']
+    if tname == 'reseted.children':
+        return True
     if value == maxValue:
         return True
     if value == 1:
@@ -854,18 +902,41 @@ def setButtonIncreaseDisable(value, maxValue):
     return False
 
 @app.callback(Output('button->', 'style'),
-              [Input('slider-show-alg', 'value')],
+              [Input('slider-show-alg', 'value'),
+               Input('reseted', 'children')],
               [State('slider-show-alg', 'max')])
-def setButtonmIncreaseDisable(value, maxValue):
+def setButtonmIncreaseDisable(value, reset, maxValue):
+    tname = dash.callback_context.triggered[0]['prop_id']
+    if tname == 'reseted.children':
+        return {'opacity': '0.2'}
     if value == maxValue:
         return {'opacity': '0.2'}
     if value == 1:
         return {'opacity': '1'}
     return {'opacity': '1'}
 
-@app.callback([Output('div-graphs', 'children'),
-               Output('memory-seed1', 'data'),
-               Output('memory-seed2', 'data')],
+@app.callback([Output('initData', 'style'),
+               Output('changeData', 'style')],
+              [Input('tabs', 'value')])
+def render_content(tab):
+    if tab == 'init':
+        return {'padding': 20,
+                'margin': 5,
+                'borderRadius': 5,
+                'border': 'thin lightgrey solid',
+                'display':'block',
+                'color': '#329696'},{'display':'none'}
+    else:
+        return {'display':'none'},{'padding': 20,
+                'margin': 5,
+                'borderRadius': 5,
+                'border': 'thin lightgrey solid',
+                'display':'block',
+                'color': '#9660BB'}
+
+@app.callback([Output('memory-seed1', 'data'),
+               Output('memory-seed2', 'data'),
+               Output('div-graphs', 'children')],
               [Input('dropdown-select-dataset', 'value'),
                Input('slider-dataset-sample-size', 'value'),
                Input('slider-dataset-noise-level', 'value'),
@@ -965,18 +1036,18 @@ def updateDataSet(dataset, nS, noise, slope, axisY,
                 'font': {'family': "Courier New, monospace"}}
         )
     )
-    return [
+    return seed1, seed2,[
         html.Div(
             className='three columns',
             style={
                 'min-width': '24.5%',
-                'height': 'calc(100vh - 90px)',
+                'height': 'calc(100vh - 160px)',
                 'margin-top': '5px',
                 'user-select': 'none',
                 '-moz-user-select': 'none',
                 '-webkit-user-select': 'none',
                 '-ms-user-select': 'none',
-                'overflow-y': 'auto',
+                'overflow-y': 'hidden',
                 'overflow-x': 'hidden'
             },
             children=[
@@ -992,7 +1063,27 @@ def updateDataSet(dataset, nS, noise, slope, axisY,
                                      ]),
                                  ]),
                              drc.Card([
-                                 html.H4("Page-Hinkley Parameters",
+                                    html.H6("Select Models : ",
+                                            style={
+                                                'text-decoration': 'none',
+                                                'color': 'inherit'
+                                            }
+                                            ),
+                                    dcc.Checklist(
+                                        id='check-model',
+                                        options=[
+                                            {'label': 'Lineal', 'value': 'lin', 'disabled': True},
+                                            {'label': 'Polynomial', 'value': 'pol'},
+                                            {'label': 'Tree Decision', 'value': 'tree'}
+                                        ],
+                                        values=['lin', 'pol'],
+                                        labelStyle={
+                                            'display': 'inline-block',
+                                            'margin-right': '1em'}
+                                    )
+                                ],id='models'),
+                             drc.Card([
+                                 html.H6("Page-Hinkley Parameters",
                                          style={
                                              'text-decoration': 'none',
                                              'color': 'inherit'}
@@ -1017,7 +1108,7 @@ def updateDataSet(dataset, nS, noise, slope, axisY,
                                      )
                                  ]),
                              drc.Card([
-                                 html.H4("Adaptative Algorithm Parameters",
+                                 html.H6("Adaptative Algorithm Parameters",
                                          style={
                                              'text-decoration': 'none',
                                              'color': 'inherit'}
@@ -1051,16 +1142,16 @@ def updateDataSet(dataset, nS, noise, slope, axisY,
                 dcc.Graph(
                     id='graph-main',
                     figure=prediction_figure,
-                    style={'height': 'calc(100vh - 90px)'}
+                    style={'height': 'calc(100vh - 160px)'}
                 )
             ]),
 
-    ], seed1, seed2
+    ]
 
-@app.callback([Output('graph-sup', 'figure'),
-               Output('graph-inf', 'figure'),
-               Output('solution', 'children'),
+@app.callback([Output('solution', 'children'),
                Output('predList', 'children'),
+               Output('errorAcum', 'children'),
+               Output('residuals', 'children'),
                Output('dataX', 'children'),
                Output('dataY', 'children'),
                Output('modelNames', 'children'),
@@ -1096,7 +1187,7 @@ def updateDataSet(dataset, nS, noise, slope, axisY,
                State('slider-amplitude-second', 'value'),
                State('slider-angular-second', 'value'),
                State('slider-phase-second', 'value'),
-               State('check-model', 'values'),
+               State('check-values', 'children'),
                State('big', 'children'),
                State('small', 'children'),
                State('admissible', 'children'),
@@ -1110,8 +1201,10 @@ def startAlg(start,
              amplitude, angular, phase,
              amplitude2, angular2, phase2,
              check, big, small, admissible, threshold):
-    start_time = time()
+    ##start_time = time()
     if start is None:
+        raise dash.exceptions.PreventUpdate()
+    if check is None:
         raise dash.exceptions.PreventUpdate()
     np.random.seed(seed1)
     X = np.random.rand(nS) * 10
@@ -1146,7 +1239,7 @@ def startAlg(start,
     dataX = X + X2
     dataY = y + y2
 
-    start_time = time()
+    ##tart_time = time()
 
     smallSize = int(small)
     admissibleP = float(admissible)
@@ -1160,33 +1253,25 @@ def startAlg(start,
         thresholdP,
         check)
     alg.addData(dataX, dataY)
-    elapsed_time = time() - start_time
+    ##elapsed_time = time() - start_time
 
-    figure2 = {"data": [{"type": "plot",
-                         "mode": "markers",
-                         "line": {"color": "#DF9C34"},
-                         "y": alg.ph.acummT}],
-               "layout": {"title": {"text": "Acumulated Error PH"}}}
 
-    figure3 = {"data": [{"type": "plot",
-                         "mode": "markers",
-                         "line": {"color": "#ff7f0e"},
-                         "y": alg.error}],
-               "layout": {"title": {"text": "Residual Error"}}}
 
-    start_time = time()
+    ##start_time = time()
     solutionjson = '|'.join(map(str, alg.sol))
     predListjson = '|'.join(map(str, alg.predList))
     listModels = json.dumps(alg.modelNames)
     dataXjson = json.dumps(alg.xAllData)
     dataYjson = json.dumps(alg.yAllData)
+    errorAcumJson = json.dumps(alg.ph.acummT)
+    resJson = json.dumps(alg.error)
 
-    elapsed_time = time() - start_time
-    print("JSON: %.10f seconds." % elapsed_time)
+    ##elapsed_time = time() - start_time
+    ##print("JSON: %.10f seconds." % elapsed_time)
 
     total = nS + nS2
     marks = {i: i for i in [total // 4, total // 2, total // 4 * 3, total]}
-    return (figure2, figure3, solutionjson, predListjson, dataXjson, dataYjson,
+    return (solutionjson, predListjson, errorAcumJson, resJson, dataXjson, dataYjson,
             listModels, total, marks, total,
             '''
             document.scrollTop = 30;
@@ -1205,7 +1290,7 @@ def startAlg(start,
             }, 2000);
             ''')
 
-@app.callback(Output('graph-main', 'figure'),
+@app.callback( Output('graph-main', 'figure'),
               [Input('slider-show-alg', 'value')],
               [State('solution', 'children'),
                State('predList', 'children'),
@@ -1231,7 +1316,7 @@ def update_graph(
     if solutionJson is None:
         raise dash.exceptions.PreventUpdate()
 
-    start = time()
+    ##start = time()
     value = int(value)
 
     solution = solutionJson.split('|')
@@ -1311,10 +1396,47 @@ def update_graph(
         )
 
     )
-    elapsed_time = time() - start
-    print("SHOW: %.10f seconds." % elapsed_time)
+    ##elapsed_time = time() - start
+    ##print("SHOW: %.10f seconds." % elapsed_time)
     return figure
 
+@app.callback(Output('graph-sup', 'figure'),
+              [Input('slider-show-alg', 'value')],
+              [State('errorAcum', 'children')
+               ])
+def update_errorAcum(
+        value,
+        acumJson):
+    if acumJson is None:
+        raise dash.exceptions.PreventUpdate()
+
+    errorAcum = json.loads(acumJson)
+    figure = {"data": [{"type": "plot",
+                         "mode": "markers",
+                         "line": {"color": "#DF9C34"},
+                         "y": errorAcum[0:value-1]}],
+               "layout": {"title": {"text": "Acumulated Error PH"}}}
+
+    return figure
+
+@app.callback(Output('graph-inf', 'figure'),
+              [Input('slider-show-alg', 'value')],
+              [State('residuals', 'children')
+               ])
+def update_residuals(
+        value,
+        resdJson):
+    if resdJson is None:
+        raise dash.exceptions.PreventUpdate()
+
+    residuals = json.loads(resdJson)
+    figure = {"data": [{"type": "plot",
+                         "mode": "markers",
+                         "line": {"color": "#DF9C34"},
+                         "y": residuals[0:value-1]}],
+               "layout": {"title": {"text": "Acumulated Error PH"}}}
+
+    return figure
 
 external_css = [
     # Normalize the CSS
