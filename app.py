@@ -95,6 +95,8 @@ app.layout = html.Div(style={'overflow':'hidden'},children=[
     html.Div(id='showValue-<', style={'display': 'none'}),
     html.Div(id='showValue->', style={'display': 'none'}),
     html.Div(id='check-values', style={'display': 'none'}),
+    visdcc.Run_js(id='javascript-button', run=""),
+    visdcc.Run_js(id='javascript-finish', run=""),
     html.Div(id='interval', style={'display': 'none'}, children=[
         dcc.Interval(
             id='interval-component',
@@ -568,30 +570,55 @@ def playInterval(nplay, nstop, reset, maxShow, value):
             interval=1*350, # in milliseconds
             n_intervals=-1,
             disabled=True)]
-    
-@app.callback([Output('button-play', 'style'),
-               Output('button-stop', 'style')],
-              [Input('button-play', 'n_clicks'),
-               Input('button-stop', 'n_clicks'),
-               Input('interval-component', 'n_intervals')],
-              [State('slider-show-alg', 'max'),
-               State('slider-show-alg', 'value')]
+
+@app.callback(Output('javascript-finish', 'run'),
+              [Input('interval-component', 'n_intervals')],
+              [State('slider-show-alg', 'max')]
                )
-def setPlayStyle(nplay, nstop, intervals, maxShow, value):
-    if nplay is None:
+def setPlayStyle(intervals, maxShow):   
+    if intervals*10 == maxShow:
+        return  '''
+            document.getElementById("button-play").style.display = 'inline-block';
+            document.getElementById("button-stop").style.display = 'none';
+            document.getElementById("button-play").disabled = true;
+            document.getElementById("button-play").style.opacity = '0.2';
+            setTimeout(function(){                    
+                document.getElementById("button-play").disabled = false;
+                document.getElementById("button-play").style.opacity = '1';
+                }, 1500);            
+            '''
+    return ''
+
+@app.callback(Output('javascript-button', 'run'),              
+              [Input('button-play', 'n_clicks'),
+               Input('button-stop', 'n_clicks')
+               ])
+def disableButtonsJs(play,stop):
+    if play is None:
         raise dash.exceptions.PreventUpdate()
       
     tname = dash.callback_context.triggered[0]['prop_id']
-    if tname == 'button-play.n_clicks':
-        return {'display': 'none'},{'display': 'inline-block', 'height': '5%','margin-left': '20px'}
-    elif tname == 'button-stop.n_clicks':
-        return {'display': 'inline-block', 'height': '5%','margin-left': '20px'},{'display': 'none'}
-    elif intervals*10 == maxShow and tname=='interval-component.n_intervals':
-
-        return {'display': 'inline-block', 'height': '5%','margin-left': '20px'},{'display': 'none'}
-    else:
-        raise dash.exceptions.PreventUpdate()
-
+    if  tname == 'button-play.n_clicks':
+        return  '''
+                document.getElementById("button-play").style.display = 'none';
+                document.getElementById("button-stop").style.display = 'inline-block';
+                document.getElementById("button-stop").disabled = true;
+                document.getElementById("button-stop").style.opacity = '0.2';
+                setTimeout(function(){                    
+                    document.getElementById("button-stop").disabled = false;
+                    document.getElementById("button-stop").style.opacity = '1';
+                    }, 1500);
+                '''
+    return  '''
+            document.getElementById("button-play").style.display = 'inline-block';
+            document.getElementById("button-stop").style.display = 'none';
+            document.getElementById("button-play").disabled = true;
+            document.getElementById("button-play").style.opacity = '0.2';
+            setTimeout(function(){                    
+                document.getElementById("button-play").disabled = false;
+                document.getElementById("button-play").style.opacity = '1';
+                }, 1500);            
+            '''
 
 @app.callback(Output('slider-show-alg', 'disabled'),
               [Input('started', 'children'),
