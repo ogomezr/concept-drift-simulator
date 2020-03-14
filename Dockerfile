@@ -1,6 +1,6 @@
 FROM python:3.7.2-slim
 
-WORKDIR /home/knives/concept-drift-simulator
+WORKDIR /concept-drift-simulator
 
 COPY requirements.txt ./
 
