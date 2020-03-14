@@ -1,4 +1,3 @@
-# pylint: disable=C0103,R0913,R0902,R0913,R0903,R0914,C0116
 """
 This app's interface and plots are heavily inspired from the scikit-learn
 Classifier comparison tutorial and dash-svm app . Part of the app's code is
@@ -8,12 +7,7 @@ https://github.com/plotly/dash-svm
 
 Autor: Oscar Gomez Ramirez
 """
-# pip install -U Flask
-# pip install dash==1.7.0
-# pip install -r requirements.txt
-# gunicorn -b 0.0.0.0:8051 app:server conda create --name simulator python=3.7
-from time import time
-from textwrap import dedent
+
 import json
 import dash
 import dash_core_components as dcc
@@ -51,6 +45,12 @@ app.layout = html.Div(style={'overflow':'hidden'},children=[
                     "logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
                     ),
                 href='https://plot.ly/products/dash/'
+            ),
+            html.A(
+                html.Img(
+                    src="/assets/help-button.png"
+                    ),
+                href='https://github.com/ogomezr/concept-drift-simulator'
             )
         ]),
     ]),
@@ -395,16 +395,7 @@ app.layout = html.Div(style={'overflow':'hidden'},children=[
                             ),
                         ]),
 
-                    ], style={'color': '#9660BB'}, id='changeData',),
-
-                    # -----------------------------------------------------------------------------
-
-                    html.Div(
-                        dcc.Markdown(dedent("""
-                        [Click here](https://github.com/ogomezr/Concept-Drift-Simulator) to visit the project repo, and learn about how to use the app.
-                        """)),
-                        style={'margin': '20px 0px', 'text-align': 'center'}
-                    ),
+                    ], style={'color': '#9660BB'}, id='changeData',)
                 ]
             ),
         ]),
