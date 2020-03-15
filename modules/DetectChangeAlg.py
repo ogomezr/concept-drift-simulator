@@ -14,7 +14,7 @@ from sklearn.preprocessing import PolynomialFeatures
 
 class DetectChangeAlg:
     def __init__(self, sizeBig, sizeSmall, x, y, phAdmissibleChange,
-                 phThreshold, mode=['lin', 'knn', 'pol', 'tree']):
+                 phThreshold, minCont, mode=['lin', 'knn', 'pol', 'tree']):
         self.xAllData = x
         self.yAllData = y
         self.xData = x
@@ -25,7 +25,7 @@ class DetectChangeAlg:
         self.chooseModel = ChooseModel.ChooseModel()
         self.model = self.chooseModel.chooseBest(x, y, mode)
         self.error = []
-        self.ph = PageHinkleyTest.PageHinkleyTest(phAdmissibleChange, phThreshold)
+        self.ph = PageHinkleyTest.PageHinkleyTest(phAdmissibleChange, phThreshold, minCont)
         self.predictedData = 0
         self.changeTime = 0
         self.img = 0

@@ -48,9 +48,11 @@ app.layout = html.Div(style={'overflow':'hidden'},children=[
             ),
             html.A(
                 html.Img(
-                    src="/assets/help-button.png"
+                    src="/assets/help-button.png",
+                    style={'height':'3em', 'padding-top':'7px'}
                     ),
-                href='https://github.com/ogomezr/concept-drift-simulator'
+                href='https://github.com/ogomezr/concept-drift-simulator',
+                
             )
         ]),
     ]),
@@ -89,7 +91,8 @@ app.layout = html.Div(style={'overflow':'hidden'},children=[
     html.Div(id='big', style={'display': 'none'}, children='300'),
     html.Div(id='small', style={'display': 'none'}, children='100'),
     html.Div(id='admissible', style={'display': 'none'}, children='0.1'),
-    html.Div(id='threshold', style={'display': 'none'}, children='10'),
+    html.Div(id='threshold', style={'display': 'none'}, children='20'),
+    html.Div(id='minimum', style={'display': 'none'}, children='25'),
     html.Div(id='modelNames', style={'display': 'none'}),
     html.Div(id='showValue', style={'display': 'none'}),
     html.Div(id='showValue-<', style={'display': 'none'}),
@@ -470,14 +473,17 @@ def disableFirst(n_clicks, started, check):
 @app.callback([Output('big', 'children'),
                Output('small', 'children'),
                Output('admissible', 'children'),
-               Output('threshold', 'children')
+               Output('threshold', 'children'),
+               Output('minimum', 'children')
                ],
               [Input('slider-big-window', 'value'),
                Input('slider-small-window', 'value'),
                Input('slider-admissible', 'value'),
-               Input('slider-threshold', 'value')])
-def setSize(big, small, admissible, threshold):
-    return big, small, admissible, threshold
+               Input('slider-threshold', 'value'),
+               Input('slider-minimum', 'value')
+               ])
+def setSize(big, small, admissible, threshold, minimum):
+    return big, small, admissible, threshold, minimum
 
 
 @app.callback(Output('alg-params', 'children'),
@@ -983,14 +989,15 @@ def render_content(tab):
               [State('big', 'children'),
                State('small', 'children'),
                State('admissible', 'children'),
-               State('threshold', 'children')
+               State('threshold', 'children'),
+               State('minimum', 'children')
                ])
 def updateDataSet(dataset, nS, noise, slope, axisY,
                   dataset2, nS2, noise2, slope2, axisY2,
                   a, b, c, d, a2, b2, c2, d2,
                   amplitude, angular, phase,
                   amplitude2, angular2, phase2, reseted,
-                  big, small, admissible, threshold):
+                  big, small, admissible, threshold, minimum):
     seed1 = np.random.randint(100)
     seed2 = np.random.randint(100)
     np.random.seed(seed1)
@@ -1148,6 +1155,15 @@ def updateDataSet(dataset, nS, noise, slope, axisY,
                                      step=50,
                                      marks={i: i for i in [50, 100, 150]},
                                      value=smallSize
+                                     ),
+                                 drc.NamedSlider(
+                                     name='Minimum data between models',
+                                     id='slider-minimum',
+                                     min=5,
+                                     max=25,
+                                     step=5,
+                                     marks={i: i for i in [5, 10, 15 ,20, 25]},
+                                     value=minimum
                                      )
                                  ])
                              ])
@@ -1209,7 +1225,8 @@ def updateDataSet(dataset, nS, noise, slope, axisY,
                State('big', 'children'),
                State('small', 'children'),
                State('admissible', 'children'),
-               State('threshold', 'children')
+               State('threshold', 'children'),
+               State('minimum','children')
               ])
 def startAlg(start,
              seed1, seed2,
@@ -1218,7 +1235,7 @@ def startAlg(start,
              a, b, c, d, a2, b2, c2, d2,
              amplitude, angular, phase,
              amplitude2, angular2, phase2,
-             check, big, small, admissible, threshold):
+             check, big, small, admissible, threshold, minimum):
     ##start_time = time()
     if start is None:
         raise dash.exceptions.PreventUpdate()
@@ -1262,6 +1279,7 @@ def startAlg(start,
     smallSize = int(small)
     admissibleP = float(admissible)
     thresholdP = int(threshold)
+    minimumP = int(minimum)
     alg = DetectChangeAlg.DetectChangeAlg(
         bigSize,
         smallSize,
@@ -1269,6 +1287,7 @@ def startAlg(start,
         ybuild,
         admissibleP,
         thresholdP,
+        minimumP,
         check)
     alg.addData(dataX, dataY)
     ##elapsed_time = time() - start_time

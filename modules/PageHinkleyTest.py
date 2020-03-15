@@ -8,7 +8,7 @@ Created on Sat Jan 25 19:34:21 2020
 
 
 class PageHinkleyTest:
-    def __init__(self, admissibleChange, threshold):
+    def __init__(self, admissibleChange, threshold, minCont):
         self.admissibleChange = admissibleChange
         self.threshold = threshold
         self.n = 0
@@ -22,7 +22,7 @@ class PageHinkleyTest:
         self.acummT = []
         self.meanError = 0
         self.cont = 0
-        self.minCont = 25
+        self.minCont = minCont
 
     def runTest(self, x):
         self.n += 1
