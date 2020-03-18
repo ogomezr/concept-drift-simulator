@@ -122,9 +122,10 @@ La columna de la derecha muestra las opciones para generar los datos.
   <img src="img/leftApp.png">
 </p>
 <p>&nbsp;</p>
+
 * **Start:** El boton START comienza la ejecución del algoritmo adaptativo, lo cual nos lleva a la sección de análisis posterior a la ejecución de este.
 * **Select Models:** Nos permite elegir que modelos queremos usar. Lineal, Polynomial y Tree Decision.
-* **Page-Hinkley Parameters:** Admissible change corresponde al valor $sigma$ y Threshold al valor $lambda$, los parámetros explicados en anteriores secciones.\\
+* **Page-Hinkley Parameters:** Admissible change corresponde al valor $sigma$ y Threshold al valor $lambda$, los parámetros explicados en anteriores secciones.
 * **Adaptative Algorithm Parameters:** Big window corresponde al tamaño maximo de la ventana de datos, Small Window corresponde al tamaño mínimo de la ventana de datos cuando detectamos un cambio, para ser mas reactivo a dicho cambio y Minimum data between models retringe la posibilidad de cambiar modelo si no han llegado $k$ datos entre cada modelo.
 
 #### Columna derecha.
