@@ -94,6 +94,19 @@ Abrimos la siguiente url en el navegador:
 ```
 http://0.0.0.0:8050/
 ```
+## Manual de usuario 
+
+La aplicación se didive en dos diferentes secciones, la que se presenta
+nada mas iniciar al usuario, la cual corresponde a la sección de elección de
+diferentes opciones y la sección de analisis de la ejecución después de ejecutar
+el algoritmo.
+### Sección de configuración.
+Esta sección es previa a ejecución de algoritmo.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/mainApp.png">
+</p>
+<p>&nbsp;</p>
 
 ## Autor ✒️
 
