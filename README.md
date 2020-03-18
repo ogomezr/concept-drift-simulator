@@ -8,7 +8,8 @@ Es una aplicación que utiliza los algoritmos implementados en las librerías [A
   <img src="img/mainApp.jpeg">
 </p>
 <p>&nbsp;</p>
-## Instrucciones de uso con Docker
+
+##  Instrucciones de uso con Docker
 
 La manera más sencilla de utilizar la aplicación es con el uso de Docker.
 * [Instalación Docker](https://docs.docker.com/install/)
