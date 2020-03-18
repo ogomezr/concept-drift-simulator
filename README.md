@@ -125,7 +125,7 @@ La columna de la derecha muestra las opciones para generar los datos.
 
 * **Start:** El boton START comienza la ejecución del algoritmo adaptativo, lo cual nos lleva a la sección de análisis posterior a la ejecución de este.
 * **Select Models:** Nos permite elegir que modelos queremos usar. Lineal, Polynomial y Tree Decision.
-* **Page-Hinkley Parameters:** Admissible change corresponde al valor $sigma$ y Threshold al valor $lambda$, los parámetros explicados en anteriores secciones.
+* **Page-Hinkley Parameters:** Admissible change corresponde al valor $\sigma$ y Threshold al valor $\lambda$, los parámetros explicados en anteriores secciones.
 * **Adaptative Algorithm Parameters:** Big window corresponde al tamaño maximo de la ventana de datos, Small Window corresponde al tamaño mínimo de la ventana de datos cuando detectamos un cambio, para ser mas reactivo a dicho cambio y Minimum data between models retringe la posibilidad de cambiar modelo si no han llegado $k$ datos entre cada modelo.
 
 #### Columna derecha.
@@ -154,7 +154,41 @@ Los gráficos son totalmente interactivos, se puede ampliar/reducir/guardar entr
 Representa los datos generados por las diferentes funciones y parámetros de los set de datos.
 Utilizando la leyenda en la parte superior izquierda se puede elegir que datos mostrar o no mostrar.
 
+### Sección de análisis.
+La mayor diferencia en la funcionalidad de la aplicación con las librerías implementadas, es la capacidad de analizar los datos post ejecución del algoritmo en cada uno de los puntos analizados, ya que en las librerías se eliminan cualquier dato que ya no tenga uso, por lo tanto, esta aplicación nos permite un análisis a posteriori no posible con las librerías.
+Una vez pulsado el boton START en la sección de configuración avanzaremos a esta sección.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/main2App.png">
+</p>
+<p>&nbsp;</p>
+Podemos observar como la columna derecha sigue teniendo un aspecto similar a la sección de configuración, solo que todas las opciones están deshabilitadas, pero aun podemos observar que opciones elegimos previamente a la ejecución.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/showApp.png">
+</p>
+<p>&nbsp;</p>
+En la fase de análisis el desplazable SHOW y los botones Anterior y Siguiente son habilitados, por lo tanto podemos elegir el punto en concreto que queremos mostrar en el gráfico central y en los gráficos de error.
+Los 3 gráficos disponibles son evolutivos, esto quiere decir que mostrarán en pantalla los resultados hasta el punto en concreto seleccionado en la barra desplazable SHOW.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/mid2App.png">
+</p>
+<p>&nbsp;</p>
+ El gráfico central muestra los datos correspondientes a ese instante en concreto de la llegada de ese punto.
+ Como podemos ver en la leyenda de la parte superior izquierda, disponemos de los datos, el último dato en llegar remarcado  en diferente tonalidad, y el modelo ajustado en ese último punto, representado en rojo.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/errorApp.png">
+</p>
+<p>&nbsp;</p>
+ 
+Podemos observar los gráficos de error en la columna izquierda, que concuerdan también con el ultimo punto elegido en la barra SHOW, por ejemplo si seleccionamos el punto 500, tendremos hasta el punto 500 de error.
 
+
+Por último, el Botón RESET y el botón PLAY.
+El botón RESET nos permite volver a la sección de configuración.
+El botón PLAY nos permite reproducir desde la llegada del primero punto hasta el último, como una animación, para detener la reproducción podemos pulsar el botón STOP, que sustitute al botón PLAY una vez pulsado o bien pulsar RESET y volver a la sección de configuración.
 
 ## Autor ✒️
 
