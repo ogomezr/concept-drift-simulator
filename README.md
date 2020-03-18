@@ -73,6 +73,8 @@ Instalación de las librerías necesarias:
 pip install -r requirements.txt
 ```
 
+### Ejecución
+
 #### Paso 4
 
 Ejecución en modo Producción:
