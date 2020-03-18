@@ -6,7 +6,7 @@ Desarrollado con Python y [Dash Plotly](https://plot.ly/dash/).
 
 <p>&nbsp;</p>
 <p align="center">
-  <img src="img/mainApp.jpeg">
+  <img src="img/demo.gif">
 </p>
 <p>&nbsp;</p>
 
