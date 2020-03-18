@@ -1,6 +1,7 @@
 # Adaptative Algorithm Simulator (Concept Drift)
 
 Es una aplicación que utiliza los algoritmos implementados en las librerías [Algoritmo Adaptativo](https://github.com/ogomezr/concept-drift-library) con una finalidad de ofrecer una herramienta educativa y de exploración con los diferentes parámetros disponibles y la creación de diferentes sets de datos de manera sencilla.
+Desarrollado con Python y [Dash Plotly](https://plot.ly/dash/).
 
 
 <p>&nbsp;</p>
@@ -107,6 +108,52 @@ Esta sección es previa a ejecución de algoritmo.
   <img src="img/mainApp.png">
 </p>
 <p>&nbsp;</p>
+Ambas secciones comparten el header, que contiene el titulo de la aplicación, 'Adaptative Algorithm Simulator ( Concept Drift)', un botón de ayuda que nos redirige a este repositorio y a este manual.
+También dispone de el logo y enlace del framework usado para el desarrollo de la aplicación Dash Plotly.
+    
+Podemos observar que claramente la aplicación se divide en 3 columnas, la izquierda, correspondiente a los parametros del algoritmo, como son los suyos propios o bien los parámetros del test de Page-Hinkley.
+    
+La parte central muestra los datos generados que serán los que el algoritmo procese cuando pulsemos el botón START. 
+    
+La columna de la derecha muestra las opciones para generar los datos.
+#### Columna izquierda.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/leftApp.png">
+</p>
+<p>&nbsp;</p>
+* **Start:** El boton START comienza la ejecución del algoritmo adaptativo, lo cual nos lleva a la sección de análisis posterior a la ejecución de este.
+* **Select Models:** Nos permite elegir que modelos queremos usar. Lineal, Polynomial y Tree Decision.
+* **Page-Hinkley Parameters:** Admissible change corresponde al valor $sigma$ y Threshold al valor $lambda$, los parámetros explicados en anteriores secciones.\\
+* **Adaptative Algorithm Parameters:** Big window corresponde al tamaño maximo de la ventana de datos, Small Window corresponde al tamaño mínimo de la ventana de datos cuando detectamos un cambio, para ser mas reactivo a dicho cambio y Minimum data between models retringe la posibilidad de cambiar modelo si no han llegado $k$ datos entre cada modelo.
+
+#### Columna derecha.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/rightApp.png">
+</p>
+<p>&nbsp;</p>
+
+Esta columna dispone de dos Tabs, Data init y Data change.
+
+* **Data init:** Este dataset se genera a usando la función seleccionada en el desplegable, tenemos como opción la funcion lineal, polinomial y senoidal, al elegir cada una de ellas los parámetros a usar cambian automáticamente.
+ El modelo inicial del algoritmo será un dataset del mismo tipo que Data init y con los mismos parámetros, con el tamaño correspondiente a la ventana de datos máxima, una vez pulsado el botón START en la columna izquierda, cada uno de los puntos generados en Data Init llegará secuencialmente al algoritmo para procesarlos.
+* **Data change:** al pulsar en el tab Data change, disponemos de las opciones para elegir los datos, una vez se pulse el botón START y todos los puntos de Data init se procesen, llegará el turno para este dataset.
+
+El color de estas opciones, verde para Data init, y morado para Data change corresponden en la gráfica central con estos para ayudar a un mayor compresión de los datos generados.
+
+#### Columna central.
+<p>&nbsp;</p>
+<p align="center">
+  <img src="img/midApp.png">
+</p>
+<p>&nbsp;</p>
+
+Los gráficos son totalmente interactivos, se puede ampliar/reducir/guardar entre otras opciones usando las herramientas en la parte superior derecha del gráfico.
+Representa los datos generados por las diferentes funciones y parámetros de los set de datos.
+Utilizando la leyenda en la parte superior izquierda se puede elegir que datos mostrar o no mostrar.
+
+
 
 ## Autor ✒️
 
