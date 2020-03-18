@@ -87,6 +87,12 @@ Ejecución en modo desarrollo (NO RECOMENDADA : la aplicación funciona de maner
 python app.py
 ```
 
+#### Paso 5
+Abrimos la siguiente url en el navegador:
+```
+http://0.0.0.0:8050/
+```
+
 ## Autor ✒️
 
 * *Óscar Gómez* - [ogomezr](https://github.com/ogomezr)
