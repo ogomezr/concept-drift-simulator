@@ -26,7 +26,7 @@ De esta manera, no es necesario descargar el repositorio ni la instalación de l
 Para acceder a la aplicación acceder desde tu navegador a la url:
 
 ```
-http://0.0.0.0:8050/
+http://localhost:8050/
 ```
 Para cambiar de puerto se debe cambiar el puerto en la comando de ejecución del contenedor.
 
